@@ -3,11 +3,12 @@
 import java.util.*;
 public class Pokemon{
 	private String name = "";
+	private int ohp = 0;
 	private int hp = 0;
 	private int energy = 50;
-	private String type = "";
-	private String weakness = "";
-	private String resistance = "";
+	private String type = " ";
+	private String weakness = " ";
+	private String resistance = " ";
 	private boolean stunned = false;
 	private boolean disabled = false;
 	private int nummoves = 0;
@@ -16,6 +17,12 @@ public class Pokemon{
 		String[] pokemonStats = pokemonString.split(",");
 		name = pokemonStats[0];
 		hp = Integer.parseInt(pokemonStats[1]);
+		ohp += hp;
+		for (int i = 2; i < 5; ++i) {
+			if (!pokemonStats[i].equals(" ")){
+				pokemonStats[i] = (char)(pokemonStats[i].charAt(0)-32) + pokemonStats[i].substring(1);
+			}
+		}
 		type = pokemonStats[2];
 		weakness = pokemonStats[3];
 		resistance = pokemonStats[4];
@@ -29,7 +36,26 @@ public class Pokemon{
 	public String getName(){
 		return name;
 	}
+	public int getHp(){
+		return hp;
+	}
+	public String getType(){
+		//CHANGE FIRST ONE TO CAPITALS USING STRING SPLICING AND CHAR + 66
+		return type;
+	}
+	public String getWeakness(){
+		return weakness;
+	}
+	public String getResistance(){
+		return resistance;
+	}
+	public String getStats(){
+		return ""+hp + " " + energy + " " + (stunned? 1:0) +" "+ (disabled? 1:0);
+	}
 	public void attack(Pokemon otherPoke, int atknum){
 		Attack currAttack = attacks.get(atknum);
+	}
+	public void heal(int amount){
+		hp = (hp+amount)%ohp;
 	}
 }
