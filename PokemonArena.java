@@ -87,6 +87,10 @@ public class PokemonArena{
 		int e;
 	}
 	private static boolean checkEnemyTurn(){
+		if (opPokemon.get(0).getHp() <= 0) {
+			opPokemon.remove(0);
+			return true;
+		}
 		return false;
 	}
 	private static void reset(){

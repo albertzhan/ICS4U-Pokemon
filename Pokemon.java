@@ -40,39 +40,59 @@ public class Pokemon{
 		}
 		return true;
 	}
-	public String attack(Pokemon defender,int movenum){
+	public String attack(Pokemon defender,int movenum){//prechecked, it can attack
 		Attack move = attacks.get(movenum);
-		String attackDescription = String.format("%s attacks %s",name,defender.getName()) + "\n";
+		if (move.cost > defender.energy) {
+			return "omg you just broke the game and you aren't allowed to use that move BTW";
+		}
+		String attackDescription = String.format("%s attacks %s using %s",name,defender.getName(),move.getName());
 		//check status
 		if (stunned){
-			return "you were stunned";
+			return attackDescription + " but you were stunned...";
 		}
 		energy -= move.cost;
-		System.out.println("energy has been reduced");
 		int baseattack = move.damage - (disabled? 10:0);
 		//calculating effects
 		if (move.effects[0]) {
 			move.stun(defender);
 		}if (move.effects[1]) {
-			baseattack *= move.wildCard();
+			int timeshit = move.wildCard();
+			if (timeshit == 0) {
+				attackDescription += "\nYou missed! ";
+			}else{
+				attackDescription += "\nYou hit! ";
+			}
+			baseattack *= timeshit;
 		}if (move.effects[2]) {
-			baseattack *= move.wildStorm();
+			int timeshit = move.wildStorm();
+			baseattack *= timeshit;
+			if (timeshit == 0) {
+				attackDescription = attackDescription + "\nYou missed!";
+			}else if (timeshit == 1){
+				attackDescription = attackDescription + "\nYou hit 1 time!";
+			}else{
+			attackDescription = attackDescription + String.format("\nYou hit %d times ",timeshit);				
+			}
 		}if (move.effects[3]) {
 			move.disable(defender);
+			attackDescription = attackDescription + String.format("\n%s got stunned!",defender.getName());
 		}if (move.effects[4]) {
 			recharge(20);
+			attackDescription = attackDescription + String.format("\nYou recovered 20 energy!");
 		}
 		double multiplier = 1;
-		System.out.printf("%s type is %s and %s type is %s with weakness %s and %s resistance\n",name,type,defender.getName(),defender.getType(),defender.getWeakness(),defender.getResistance());
 		if (type.equals(defender.resistance)){
 			multiplier = multiplier/2;
-			attackDescription += "AND IT WAS NOT VERY EFFECTIVE...";
+			attackDescription += "\nAND IT WAS NOT VERY EFFECTIVE...";
 		}
 		if (type.equals(defender.weakness)) {
 			multiplier = multiplier*2;
-			attackDescription += "AND IT WAS SUPER EFFECTIVE...";
+			attackDescription += "\nAND IT WAS SUPER EFFECTIVE...";
 		}
-		return attackDescription + " You dealt " + baseattack*multiplier;
+		float damage = Math.round(baseattack*multiplier);
+		int rdamage = (int)damage;
+		defender.hp -= rdamage;
+		return attackDescription + "\nYou dealt " + rdamage + " damage";
 	}	
 	public String getName(){
 		return name;
