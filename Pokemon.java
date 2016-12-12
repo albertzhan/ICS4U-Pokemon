@@ -157,12 +157,11 @@ public class Pokemon{
 		}
 		public int wildCard(){
 			Random rand = new Random();
-			return rand.nextInt(1);
+			return rand.nextInt(2);
 		}
 		public int wildStorm(){
 			Random rand = new Random();
-			int myopt = rand.nextInt(1);
-			System.out.println(myopt + " THIS IS MYOPT SO FAR");
+			int myopt = rand.nextInt(2);
 			return myopt == 1? myopt + wildStorm():0;
 		}
 		public void disable(Pokemon defender){

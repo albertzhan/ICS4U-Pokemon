@@ -120,7 +120,7 @@ public class PokemonArena{
 		Random rand = new Random();
 		PokemonTools.displayCenteredText(String.format("Battle %d",battlenum));
 		selectStarter();
-		if (rand.nextInt(1) == 1) {
+		if (rand.nextInt(2) == 1) {
 			PokemonTools.displayBattle(opPokemon.get(0),myPokemon.get(0));
 			enemyTurn();
 			checkPlayerTurn();
