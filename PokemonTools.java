@@ -7,10 +7,9 @@ public class PokemonTools{
 	private static String border = new String(new char[boxsize]).replace('\0', '=');
 	private static String errorMessage = "Oops, please enter a valid number!";
 	//static class with static methods to be used in pokemon arena
-
 	public static int takeInt(int lower, int higher){
 		//lower higher are inclusive, i.e. 1,3 -> 1,2,3 are all valid
-		//my version to take in input, to make sure it doesn't crash each time
+		//my version to take int input, to make sure it doesn't crash each time
 		Scanner kb = new Scanner(System.in);
 		String toInt = kb.nextLine().trim();
 		try{
@@ -22,7 +21,7 @@ public class PokemonTools{
 			return takeInt(lower,higher);
 		}catch(NumberFormatException e){
 			displayText(errorMessage);
-			return takeInt(lower,higher);
+			return takeInt(lower,higher);//recursively calls until something valid is given
 		}
 	}
 	public static void displayPokemonStats(Pokemon pokeToSee){
@@ -48,46 +47,39 @@ public class PokemonTools{
 	public static void displayBattle(Pokemon myPoke, Pokemon opPoke){
 		System.out.println(border);
 		displayPokemonStats(myPoke);
-		displayText("vs");
+		displayCenteredText("vs");
 		displayPokemonStats(opPoke);
 		System.out.println(border);
 	}
 	public static void displayBorderedUpText(String toDisplay){
-		System.out.println(border);
+		System.out.println(border);//displays the top border
 		if (!toDisplay.equals("NoTextToDisplay")) {
+			//allows me to pass in something so that it doesn't give a new line
 			displayText(toDisplay);
 		}
 	}
 	public static void displayBorderedDownText(String toDisplay){
 		if (!toDisplay.equals("NoTextToDisplay")) {
+			//allows me to pass in something so that it doesn't give a new line
 			displayText(toDisplay);		
 		}
-		System.out.println(border);
+		System.out.println(border);//displaying the bottom border
+	}
+	public static void displayAttacks(Pokemon attacker){
+		ArrayList<Pokemon.Attack> attacks = attacker.getMoves();
+		for (int i = 0; i < attacks.size(); ++i) {
+			System.out.printf("%d. %s\n",i+1,attacks.get(i).getName());
+		}
 	}
 	public static void displayText(String toDisplay){
-		//box length is 114
-		//automatically centers text
+		//a println statement that diffrentiates test printing and actual game printing
+		System.out.println(toDisplay);
+	}
+	public static void displayCenteredText(String toDisplay){
+		//the width is fixed 114
 		System.out.println(toDisplay);
 	}
 }
 
-class Attack{
-	String name = "";
-	int cost = 0;
-	int damage = 0;
-	String effect = "";
-	public Attack(String name, int cost, int damage, String effect){
-		this.name = name;
-		this.cost = cost;
-		this.damage = damage;
-		this.effect = effect;
-	}
-}
 
-class AttackEffect{
-	int hi = 0;
-	public AttackEffect(int hi){
-		this.hi = hi;
-	}
-}
 

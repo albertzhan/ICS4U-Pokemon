@@ -3,6 +3,7 @@
 import java.util.*;
 public class Pokemon{
 	private String name = "";
+	private int oenergy = 50;
 	private int ohp = 0;
 	private int hp = 0;
 	private int energy = 50;
@@ -24,23 +25,65 @@ public class Pokemon{
 			}
 		}
 		type = pokemonStats[2];
-		weakness = pokemonStats[3];
-		resistance = pokemonStats[4];
+		resistance = pokemonStats[3];
+		weakness = pokemonStats[4];
 		nummoves = Integer.parseInt(pokemonStats[5]);
-		for (int i = 0; i < nummoves; ++i) {
+		for (int i = 0; i < nummoves; ++i) {//change all the typings so that they have capitals
 			int spot = 6+4*i;
 			Attack newAttack = new Attack(pokemonStats[spot],Integer.parseInt(pokemonStats[spot+1]),Integer.parseInt(pokemonStats[spot+2]),pokemonStats[spot+3]);
 			attacks.add(newAttack);
 		}
 	}
+	public boolean canUseMove(int movenum){
+		if (energy < attacks.get(movenum).cost) {
+			return false;
+		}
+		return true;
+	}
+	public String attack(Pokemon defender,int movenum){
+		Attack move = attacks.get(movenum);
+		String attackDescription = String.format("%s attacks %s",name,defender.getName()) + "\n";
+		//check status
+		if (stunned){
+			return "you were stunned";
+		}
+		energy -= move.cost;
+		System.out.println("energy has been reduced");
+		int baseattack = move.damage - (disabled? 10:0);
+		//calculating effects
+		if (move.effects[0]) {
+			move.stun(defender);
+		}if (move.effects[1]) {
+			baseattack *= move.wildCard();
+		}if (move.effects[2]) {
+			baseattack *= move.wildStorm();
+		}if (move.effects[3]) {
+			move.disable(defender);
+		}if (move.effects[4]) {
+			recharge(20);
+		}
+		double multiplier = 1;
+		System.out.printf("%s type is %s and %s type is %s with weakness %s and %s resistance\n",name,type,defender.getName(),defender.getType(),defender.getWeakness(),defender.getResistance());
+		if (type.equals(defender.resistance)){
+			multiplier = multiplier/2;
+			attackDescription += "AND IT WAS NOT VERY EFFECTIVE...";
+		}
+		if (type.equals(defender.weakness)) {
+			multiplier = multiplier*2;
+			attackDescription += "AND IT WAS SUPER EFFECTIVE...";
+		}
+		return attackDescription + " You dealt " + baseattack*multiplier;
+	}	
 	public String getName(){
+		return name;
+	}
+	public String toString(){
 		return name;
 	}
 	public int getHp(){
 		return hp;
 	}
 	public String getType(){
-		//CHANGE FIRST ONE TO CAPITALS USING STRING SPLICING AND CHAR + 66
 		return type;
 	}
 	public String getWeakness(){
@@ -49,13 +92,81 @@ public class Pokemon{
 	public String getResistance(){
 		return resistance;
 	}
+	public ArrayList<Attack> getMoves(){
+		return attacks;
+	}
+	public int getNumMoves(){
+		return nummoves;
+	}
+	public int getEnergy(){
+		return energy;
+	}
 	public String getStats(){
 		return ""+hp + " " + energy + " " + (stunned? 1:0) +" "+ (disabled? 1:0);
 	}
-	public void attack(Pokemon otherPoke, int atknum){
-		Attack currAttack = attacks.get(atknum);
+	public void recharge(int amount){
+		energy = energy+amount;
+		if (energy > oenergy){
+			energy = oenergy;
+		}
 	}
 	public void heal(int amount){
-		hp = (hp+amount)%ohp;
+		hp = hp + amount;
+		if (hp > ohp) {
+			hp = ohp;
+		}
+	}
+	public void resetEnergy(){
+		energy = 50;
+	}
+	public void unstun(){
+		stunned = false;
+	}
+	public void undisable(){
+		disabled = false;
+	}
+	class Attack{
+		String name = "";
+		int cost = 0;
+		int damage = 0;
+		//stun, wild card, wild storm, disable, recharge
+		boolean [] effects = new boolean[5];
+
+		public Attack(String name, int cost, int damage, String effect){
+			this.name = name;
+			this.cost = cost;
+			this.damage = damage;
+			if (effect.equals("stun")) {//just in case newer moves can contain multiple effects
+				//or more effects, it's easier to change.
+				this.effects[0] = true;
+			}else if (effect.contains("wild card")) {
+				this.effects[1] = true;
+			}else if (effect.contains("wild storm")){
+				this.effects[2] = true;
+			}else if (effect.contains("disable")) {
+				this.effects[3] = true;
+			}else if (effect.contains("recharge")){
+				this.effects[4] = true;
+			}
+		}
+		public String getName(){
+			return name;
+		}
+		public void stun(Pokemon defender){
+			defender.stunned = true;
+		}
+		public int wildCard(){
+			Random rand = new Random();
+			return rand.nextInt(1);
+		}
+		public int wildStorm(){
+			Random rand = new Random();
+			int myopt = rand.nextInt(1);
+			System.out.println(myopt + " THIS IS MYOPT SO FAR");
+			return myopt == 1? myopt + wildStorm():0;
+		}
+		public void disable(Pokemon defender){
+			defender.disabled = true;
+		}
 	}
 }
