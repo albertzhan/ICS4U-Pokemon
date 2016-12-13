@@ -1,7 +1,6 @@
 //Pokemon Arena
 //Albert Zhan
 //main class to run
-
 import java.util.*;
 import java.io.*;
 public class PokemonArena{
@@ -22,6 +21,9 @@ public class PokemonArena{
 	}
 	private static void recharge(){
 		for (Pokemon alive : myPokemon) {
+			alive.recharge(10);
+		}
+		for (Pokemon alive : opPokemon) {
 			alive.recharge(10);
 		}
 	}
@@ -78,17 +80,42 @@ public class PokemonArena{
 		//create list of priority attacks to use
 		//go through and check if it can attack with the energy
 		//else struggle
-		int e;
+		//create arraylist of moves index, then shuffle
+		// WHY DON'T I HAVE THIS PACKAGE int[] enemyOptions = IntStream.range(0, opPokemon.get(0).getNumMoves()).toArray();
+		ArrayList<Integer> enemyOptions = new ArrayList<Integer>();
+		for (int i = 0; i < opPokemon.get(0).getNumMoves(); i++) {
+			enemyOptions.add(i);
+		}
+		Collections.shuffle(enemyOptions);
+		for (Integer move : enemyOptions) {
+			//check if can use
+			if (opPokemon.get(0).canUseMove(move)) {
+				//uses it and returns to stop method
+				System.out.println(opPokemon.get(0).attack(myPokemon.get(0),move));
+				return;
+			}
+		}
+		//use struggle when no moves can be used
+		opPokemon.get(0).struggle(myPokemon.get(0));
 	}
 	private static boolean battle(ArrayList<Pokemon> player, ArrayList<Pokemon> enemy){
 		return true;
 	}
-	private static void checkPlayerTurn(){
-		int e;
+	private static boolean checkPlayerTurn(){
+		if (myPokemon.get(0).getHp() <= 0) {
+			Pokemon dead = myPokemon.get(0);
+			myPokemon.remove(0);
+			System.out.println("YOU DIED");
+			dead.setHp(0);
+			myGraveyard.add(dead);
+			return true;
+		}
+		return false;
 	}
 	private static boolean checkEnemyTurn(){
 		if (opPokemon.get(0).getHp() <= 0) {
 			opPokemon.remove(0);
+			System.out.println("THAT GUY FAINTED");
 			return true;
 		}
 		return false;
@@ -127,7 +154,9 @@ public class PokemonArena{
 		if (rand.nextInt(2) == 1) {
 			PokemonTools.displayBattle(opPokemon.get(0),myPokemon.get(0));
 			enemyTurn();
-			checkPlayerTurn();
+			if(checkPlayerTurn()){
+				return;
+			}
 		}
 		while (true){
 			PokemonTools.displayBattle(myPokemon.get(0),opPokemon.get(0));
@@ -137,7 +166,7 @@ public class PokemonArena{
 			}
 			enemyTurn();
 			checkPlayerTurn();
-			recharge();	
+			recharge();
 		}
 	}
 	private static void pickAction(){

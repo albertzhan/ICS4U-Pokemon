@@ -40,45 +40,15 @@ public class Pokemon{
 		}
 		return true;
 	}
+	public String struggle(Pokemon defender){//uses struggle on the defender
+		System.out.println("I STRUGGLED!!!!!!!!!");
+		return "";
+	}
 	public String attack(Pokemon defender,int movenum){//prechecked, it can attack
 		Attack move = attacks.get(movenum);
-		if (move.cost > defender.energy) {
-			return "omg you just broke the game and you aren't allowed to use that move BTW";
-		}
 		String attackDescription = String.format("%s attacks %s using %s",name,defender.getName(),move.getName());
-		//check status
-		if (stunned){
-			return attackDescription + " but you were stunned...";
-		}
-		energy -= move.cost;
-		int baseattack = move.damage - (disabled? 10:0);
-		//calculating effects
-		if (move.effects[0]) {
-			move.stun(defender);
-		}if (move.effects[1]) {
-			int timeshit = move.wildCard();
-			if (timeshit == 0) {
-				attackDescription += "\nYou missed! ";
-			}else{
-				attackDescription += "\nYou hit! ";
-			}
-			baseattack *= timeshit;
-		}if (move.effects[2]) {
-			int timeshit = move.wildStorm();
-			baseattack *= timeshit;
-			if (timeshit == 0) {
-				attackDescription = attackDescription + "\nYou missed!";
-			}else if (timeshit == 1){
-				attackDescription = attackDescription + "\nYou hit 1 time!";
-			}else{
-			attackDescription = attackDescription + String.format("\nYou hit %d times ",timeshit);				
-			}
-		}if (move.effects[3]) {
-			move.disable(defender);
-			attackDescription = attackDescription + String.format("\n%s got stunned!",defender.getName());
-		}if (move.effects[4]) {
-			recharge(20);
-			attackDescription = attackDescription + String.format("\nYou recovered 20 energy!");
+		if (move.cost > energy) {
+			return attackDescription + String.format(" but %s didn't have enough energy to attack!",name);
 		}
 		double multiplier = 1;
 		if (type.equals(defender.resistance)){
@@ -88,11 +58,44 @@ public class Pokemon{
 		if (type.equals(defender.weakness)) {
 			multiplier = multiplier*2;
 			attackDescription += "\nAND IT WAS SUPER EFFECTIVE...";
+		}//check status
+		if (stunned){
+			return attackDescription + String.format(" but %s was stunned...",name);
+		}
+		energy -= move.cost;
+		int baseattack = move.damage - (disabled? 10:0);
+		//calculating effects
+		if (move.effects[0]) {
+			move.stun(defender);
+		}if (move.effects[1]) {
+			int timeshit = move.wildCard();
+			if (timeshit == 0) {
+				attackDescription += String.format("\n%s missed! ",name);
+			}else{
+				attackDescription += String.format("\n%s hit! ",name);
+			}
+			baseattack *= timeshit;
+		}if (move.effects[2]) {
+			int timeshit = move.wildStorm();
+			baseattack *= timeshit;
+			if (timeshit == 0) {
+				attackDescription = attackDescription + String.format("\n%s missed!",name);
+			}else if (timeshit == 1){
+				attackDescription = attackDescription + String.format("\n%s hit 1 time!",name);
+			}else{
+			attackDescription = attackDescription + String.format("\n%s hit %d times ",name,timeshit);				
+			}
+		}if (move.effects[3]) {
+			move.disable(defender);
+			attackDescription = attackDescription + String.format("\n%s got stunned!",name,defender.getName());
+		}if (move.effects[4]) {
+			recharge(20);
+			attackDescription = attackDescription + String.format("\n%s recovered 20 energy!",name);
 		}
 		float damage = Math.round(baseattack*multiplier);
 		int rdamage = (int)damage;
 		defender.hp -= rdamage;
-		return attackDescription + "\nYou dealt " + rdamage + " damage";
+		return attackDescription + String.format("\n%s dealt ",name) + rdamage + " damage";
 	}	
 	public String getName(){
 		return name;
@@ -102,6 +105,9 @@ public class Pokemon{
 	}
 	public int getHp(){
 		return hp;
+	}
+	public void setHp(int amount){
+		hp = 0;
 	}
 	public String getType(){
 		return type;
