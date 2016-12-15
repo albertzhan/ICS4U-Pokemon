@@ -22,6 +22,7 @@ public class PokemonArena{
 	}
 	private static void recharge(){
 		myPokemon.get(0).unstun(); //unstuns at the end of the turn
+		opPokemon.get(0).unstun();
 		for (Pokemon alive : myPokemon) {
 			alive.recharge(10);
 		}
@@ -104,7 +105,9 @@ public class PokemonArena{
 		PokemonTools.displayBattle(myPokemon.get(0),opPokemon.get(0));
 		if(first == 1){
 			enemyTurn();
-			checkPlayerTurn();
+			if(checkPlayerTurn()){
+				return 2;
+			}
 		}
 		if(pickAction()){
 			return 0; //they want to quit
@@ -114,10 +117,15 @@ public class PokemonArena{
 		}
 		if(first == 0){
 			enemyTurn();
-			checkPlayerTurn(); //nothing is done since the opPokemon doesn't switch
+			if(checkPlayerTurn()){
+				return 2;
+			} //nothing is done since the opPokemon doesn't switch
+		}
+		if(checkPlayerTurn() || checkEnemyTurn()){
+			return 2;
 		}
 		recharge();
-		return 2; //nothing happens
+		return 3; //nothing happens
 	}
 	private static boolean checkPlayerTurn(){
 		if (myPokemon.get(0).getHp() <= 0) {
@@ -197,7 +205,9 @@ public class PokemonArena{
 			int result = battle(first);
 			if(result == 0){
 				return true; //quits
-			}else if(result == 1){
+			}else if(result == 1){//both 1 and 2 mean it's over
+				break;
+			}else if(result == 2){
 				break;
 			}
 		}
