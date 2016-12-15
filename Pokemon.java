@@ -97,7 +97,7 @@ public class Pokemon{
 			}
 		}if (move.effects[3]) {
 			move.disable(defender);
-			attackDescription = attackDescription + String.format("\n%s got stunned!",name,defender.getName());
+			attackDescription = attackDescription + String.format("\n%s got stunned!",defender,defender.getName());
 		}if (move.effects[4]) {
 			recharge(20);
 			attackDescription = attackDescription + String.format("\n%s recovered 20 energy!",name);
@@ -119,6 +119,9 @@ public class Pokemon{
 	public int getHp(){
 		return hp;
 	}
+	public int getPercentHp(){
+		return 10*Math.round(10*hp/(ohp));
+	}
 	public void setHp(int amount){
 		hp = 0;
 	}
@@ -139,6 +142,9 @@ public class Pokemon{
 	}
 	public int getEnergy(){
 		return energy;
+	}
+	public int getPercentEnergy(){
+		return 10*(Math.round(10*energy/oenergy));
 	}
 	public String getStats(){
 		return ""+hp + " " + energy + " " + (stunned? 1:0) +" "+ (disabled? 1:0);

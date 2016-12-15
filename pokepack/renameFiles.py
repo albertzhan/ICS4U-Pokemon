@@ -11,9 +11,7 @@ while True:
 for line in pokedex.readlines():
     file = line.split()[0]
     name = (" ").join(line.split()[1:])
-    print(file,"hi",name,"hi")
     try:
         os.rename(file+".txt",name+".txt")
-        print(file,name)
     except:
         pass

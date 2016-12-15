@@ -239,6 +239,7 @@ public class PokemonArena{
 		//then enters fight stages, while loop
 		load("pokemon.txt");
 		pickPokemon();
+		PokemonTools.loadTexts();
 		int c = 1;
 		while (myPokemon.size()!= 0 && opPokemon.size()!=0){
 			if(round(c++)){

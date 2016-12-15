@@ -6,7 +6,20 @@ public class PokemonTools{
 	private static int boxsize = 114;
 	private static String border = new String(new char[boxsize]).replace('\0', '=');
 	private static String errorMessage = "Oops, please enter a valid number!";
+	private static String vs = "";
+	private static char statusempty = '▒';
+	private static char statusfill = '█';
 	//static class with static methods to be used in pokemon arena
+	public static void loadTexts(){
+		try{
+			Scanner vsFile = new Scanner(new BufferedReader(new FileReader("vs.txt")));
+			vsFile.useDelimiter("\\Z");  
+			vs = vsFile.next(); 
+			vsFile.close();
+		}catch(IOException e){
+			vs = "NO DISPLAY AVAILABLE";
+		}
+	}
 	public static int takeInt(int lower, int higher){
 		//lower higher are inclusive, i.e. 1,3 -> 1,2,3 are all valid
 		//my version to take int input, to make sure it doesn't crash each time
@@ -27,8 +40,16 @@ public class PokemonTools{
 	public static void displayPokemonStats(Pokemon pokeToSee){
 		String [] pokeStats = pokeToSee.getStats().split("\\s+");
 		//MAKE BARS FOR HP AND ENERGY
-		String toDisplay = String.format("HP: %s   ~~~   Energy: %s",pokeStats[0],pokeStats[1]);
-		displayText(String.format("%-12s   ~~~   ",pokeToSee.getName()) + toDisplay);
+		int myhp = pokeToSee.getPercentHp()/10;
+		int myenergy = pokeToSee.getPercentEnergy()/10;
+		String hpfill = new String(new char[myhp]).replace('\0', statusfill);
+		String hpmissing = new String(new char[10-myhp]).replace('\0', statusempty);
+		String energyfill = new String(new char[myenergy]).replace('\0', statusfill);
+		String energymissing = new String(new char[10-myenergy]).replace('\0', statusempty);
+		String hpBar = hpfill+hpmissing;
+		String energyBar = energyfill+energymissing;
+		String toDisplay = String.format("HP: %s "+hpBar+"  Energy: %s" + energyBar,pokeStats[0],pokeStats[1]);
+		displayText(String.format("%-12s  ",pokeToSee.getName()) + toDisplay);
 	}
 	public static void displayPokemonStats(int counter, Pokemon pokeToSee){
 		System.out.print(counter + ". ");
@@ -48,7 +69,7 @@ public class PokemonTools{
 		System.out.println(border);
 		System.out.println(myPoke.getVisual());
 		displayPokemonStats(myPoke);
-		displayCenteredText("vs");
+		System.out.println(vs);
 		displayRightedPokemonVisual(opPoke.getVisual());
 		displayPokemonStats(opPoke);
 		System.out.println(border);
@@ -86,18 +107,9 @@ public class PokemonTools{
 	}
 	public static void displayCenteredText(String toDisplay){
 		//the width is fixed 114
-		//checks if the thingy is over 114;
-		//then will calls itself if it is, with the 114 char cutoff then on remaining
 		//keep track of words, and if it's an entire word > 114 then just print the 114 char
-		if (toDisplay.length() <= boxsize) {//padding is spaces on each side to add to center the text
-			String padding = new String(new char[(boxsize-toDisplay.length())/2]).replace('\0', ' ');
-			System.out.println(padding + toDisplay + padding);
-			return;
-		}
-		String myline = "";
-
-		System.out.println(myline);
-
+		String padding = new String(new char[(boxsize-toDisplay.length())/2]).replace('\0', ' ');
+		System.out.println(padding + toDisplay + padding);
 	}
 }
 
