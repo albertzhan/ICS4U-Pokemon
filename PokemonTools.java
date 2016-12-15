@@ -46,8 +46,10 @@ public class PokemonTools{
 	}
 	public static void displayBattle(Pokemon myPoke, Pokemon opPoke){
 		System.out.println(border);
+		System.out.println(myPoke.getVisual());
 		displayPokemonStats(myPoke);
 		displayCenteredText("vs");
+		displayRightedPokemonVisual(opPoke.getVisual());
 		displayPokemonStats(opPoke);
 		System.out.println(border);
 	}
@@ -74,6 +76,13 @@ public class PokemonTools{
 	public static void displayText(String toDisplay){
 		//a println statement that diffrentiates test printing and actual game printing
 		System.out.println(toDisplay);
+	}
+	public static void displayRightedPokemonVisual(String toDisplay){//max width is 77 so I shift everything over box-77
+		String padding = new String(new char[boxsize-77]).replace('\0', ' ');
+		String[] lines = toDisplay.split("\n");
+		for(String line:lines){
+			System.out.println(padding+line);
+		}
 	}
 	public static void displayCenteredText(String toDisplay){
 		//the width is fixed 114

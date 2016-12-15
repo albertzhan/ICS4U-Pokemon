@@ -18,6 +18,7 @@ public class PokemonArena{
 			Pokemon tmp = new Pokemon(pokemonFile.nextLine()+" ,");
 			allPokemon.add(tmp);
 		}
+		pokemonFile.close();
 	}
 	private static void recharge(){
 		myPokemon.get(0).unstun(); //unstuns at the end of the turn

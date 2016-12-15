@@ -1,8 +1,10 @@
 //Pokemon
 //class to create my Pokemon
 import java.util.*;
+import java.io.*;
 public class Pokemon{
 	private String name = "";
+	private String visual = "";
 	private int oenergy = 50;
 	private int ohp = 0;
 	private int hp = 0;
@@ -32,6 +34,14 @@ public class Pokemon{
 			int spot = 6+4*i;
 			Attack newAttack = new Attack(pokemonStats[spot],Integer.parseInt(pokemonStats[spot+1]),Integer.parseInt(pokemonStats[spot+2]),pokemonStats[spot+3]);
 			attacks.add(newAttack);
+		}
+		try{
+			Scanner pokemonFile = new Scanner(new BufferedReader(new FileReader("pokepack/"+name+".txt")));
+			pokemonFile.useDelimiter("\\Z");  
+			visual = pokemonFile.next(); 
+			pokemonFile.close();
+		}catch(IOException e){
+			visual = "NO DISPLAY AVAILABLE";
 		}
 	}
 	public boolean canUseMove(int movenum){
@@ -99,6 +109,9 @@ public class Pokemon{
 	}	
 	public String getName(){
 		return name;
+	}
+	public String getVisual(){
+		return visual;
 	}
 	public String toString(){
 		return name;
