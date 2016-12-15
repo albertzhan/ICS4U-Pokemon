@@ -65,7 +65,7 @@ public class PokemonTools{
 		}
 		System.out.println(border);//displaying the bottom border
 	}
-	public static void displayAttacks(Pokemon attacker){
+	public static void displayAttacks(Pokemon attacker){//displays the attacks of a certain pokemon
 		ArrayList<Pokemon.Attack> attacks = attacker.getMoves();
 		for (int i = 0; i < attacks.size(); ++i) {
 			System.out.printf("%d. %s\n",i+1,attacks.get(i).getName());
@@ -77,7 +77,18 @@ public class PokemonTools{
 	}
 	public static void displayCenteredText(String toDisplay){
 		//the width is fixed 114
-		System.out.println(toDisplay);
+		//checks if the thingy is over 114;
+		//then will calls itself if it is, with the 114 char cutoff then on remaining
+		//keep track of words, and if it's an entire word > 114 then just print the 114 char
+		if (toDisplay.length() <= boxsize) {//padding is spaces on each side to add to center the text
+			String padding = new String(new char[(boxsize-toDisplay.length())/2]).replace('\0', ' ');
+			System.out.println(padding + toDisplay + padding);
+			return;
+		}
+		String myline = "";
+
+		System.out.println(myline);
+
 	}
 }
 

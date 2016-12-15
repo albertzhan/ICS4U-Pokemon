@@ -20,6 +20,7 @@ public class PokemonArena{
 		}
 	}
 	private static void recharge(){
+		myPokemon.get(0).unstun(); //unstuns at the end of the turn
 		for (Pokemon alive : myPokemon) {
 			alive.recharge(10);
 		}
@@ -98,8 +99,24 @@ public class PokemonArena{
 		//use struggle when no moves can be used
 		opPokemon.get(0).struggle(myPokemon.get(0));
 	}
-	private static boolean battle(ArrayList<Pokemon> player, ArrayList<Pokemon> enemy){
-		return true;
+	private static int battle(int first){//order of battle depends on first.
+		PokemonTools.displayBattle(myPokemon.get(0),opPokemon.get(0));
+		if(first == 1){
+			enemyTurn();
+			checkPlayerTurn();
+		}
+		if(pickAction()){
+			return 0; //they want to quit
+		}
+		if(checkEnemyTurn()){
+			return 1; //switch pokemon for enemy
+		}
+		if(first == 0){
+			enemyTurn();
+			checkPlayerTurn(); //nothing is done since the opPokemon doesn't switch
+		}
+		recharge();
+		return 2; //nothing happens
 	}
 	private static boolean checkPlayerTurn(){
 		if (myPokemon.get(0).getHp() <= 0) {
@@ -146,39 +163,58 @@ public class PokemonArena{
 		int myopt = PokemonTools.takeInt(1,myPokemon.size())-1;
 		swapPokemon(myopt);
 	}
-	private static void round(int battlenum){
+	private static boolean round(int battlenum){
 		//determines if the opponent starts first in the round
+		// Random rand = new Random();
+		// PokemonTools.displayCenteredText(String.format("Battle %d",battlenum));
+		// selectStarter();
+		// if (rand.nextInt(2) == 1) {
+		// 	PokemonTools.displayBattle(opPokemon.get(0),myPokemon.get(0));
+		// 	enemyTurn();
+		// 	if(checkPlayerTurn()){
+		// 		return false;
+		// 	}
+		// }
+		// while (true){
+		// 	PokemonTools.displayBattle(myPokemon.get(0),opPokemon.get(0));
+		// 	if(pickAction()){
+		// 		return true;
+		// 	}
+		// 	if(checkEnemyTurn()){
+		// 		break;
+		// 	}
+		// 	enemyTurn();
+		// 	checkPlayerTurn();
+		// 	recharge();
+		// }
+		// return false;
 		Random rand = new Random();
 		PokemonTools.displayCenteredText(String.format("Battle %d",battlenum));
 		selectStarter();
-		if (rand.nextInt(2) == 1) {
-			PokemonTools.displayBattle(opPokemon.get(0),myPokemon.get(0));
-			enemyTurn();
-			if(checkPlayerTurn()){
-				return;
-			}
-		}
+		int first = rand.nextInt(2); //if first is 0 then player goes first, cpu if 1
 		while (true){
-			PokemonTools.displayBattle(myPokemon.get(0),opPokemon.get(0));
-			pickAction();
-			if(checkEnemyTurn()){
+			int result = battle(first);
+			if(result == 0){
+				return true; //quits
+			}else if(result == 1){
 				break;
 			}
-			enemyTurn();
-			checkPlayerTurn();
-			recharge();
 		}
+		return false;
 	}
-	private static void pickAction(){
-		PokemonTools.displayBorderedDownText(String.format("Pick an option\n1. Attack\n2. Retreat\n3. Pass"));
-		int myopt = PokemonTools.takeInt(1,3);
+	private static boolean pickAction(){
+		PokemonTools.displayBorderedDownText(String.format("Pick an option\n1. Attack\n2. Retreat\n3. Pass\n4. Quit"));
+		int myopt = PokemonTools.takeInt(1,4);
 		if (myopt == 1){
 			attack(myPokemon.get(0),opPokemon.get(0));
 		}else if (myopt == 2){
 			retreat();
-		}else{
+		}else if(myopt == 3){
 			pass();
+		}else{
+			return true;
 		}
+		return false;
 	}
 	private static void pickPokemon(){
 		PokemonTools.displayText("HELLO! Welcome to Pokemon Arena! Choose 4 pokemon");
@@ -202,20 +238,19 @@ public class PokemonArena{
 		//then enters fight stages, while loop
 		load("pokemon.txt");
 		pickPokemon();
-
-
-
-		myPokemon.remove(0);
-		Pokemon test = new Pokemon("Diglett,30,earth,leaf,electric,2,Dig,10,10, ,Mud Slap,20,30, ");
-
-
-
-
-		myGraveyard.add(test);
 		int c = 1;
 		while (myPokemon.size()!= 0 && opPokemon.size()!=0){
-			round(c++); //takes care of the entire battle
+			if(round(c++)){
+				break;
+			} //takes care of the entire battle
 			reset(); //heals all pokemon energy for 20 at the end of each battle
+		}
+		if (myPokemon.size() == 0) {
+			System.out.println("YOU LOST");
+		}else if (opPokemon.size() == 0) {
+			System.out.println("YOU WON");
+		}else{
+			System.out.println("You fleed the battle...");
 		}
 	}
 }
