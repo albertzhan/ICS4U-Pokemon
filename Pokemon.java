@@ -2,7 +2,7 @@
 //class to create my Pokemon
 import java.util.*;
 import java.io.*;
-public class Pokemon{
+public class Pokemon{//class to create pokemon objects
 	private String name = "";
 	private String visual = "";
 	private int oenergy = 50;
@@ -55,7 +55,8 @@ public class Pokemon{
 		return "";
 	}
 	public String attack(Pokemon defender,int movenum){//prechecked, it can attack
-		Attack move = attacks.get(movenum);
+		//returns the attack description to be printed out
+		Attack move = attacks.get(movenum);//move that is being used
 		String attackDescription = String.format("%s attacks %s using %s",name,defender.getName(),move.getName());
 		if (move.cost > energy) {
 			return attackDescription + String.format(" but %s didn't have enough energy to attack!",name);
@@ -72,7 +73,7 @@ public class Pokemon{
 		if (stunned){
 			return attackDescription + String.format(" but %s was stunned...",name);
 		}
-		energy -= move.cost;
+		energy -= move.cost;//subtracts energy cost
 		int baseattack = move.damage - (disabled? 10:0);
 		//calculating effects
 		if (move.effects[0]) {
@@ -103,14 +104,14 @@ public class Pokemon{
 			attackDescription = attackDescription + String.format("\n%s recovered 20 energy!",name);
 		}
 		float damage = Math.round(baseattack*multiplier);
-		int rdamage = (int)damage;
+		int rdamage = (int)damage;//java hates me and possible loss of double to int conversion
 		defender.hp -= rdamage;
 		return attackDescription + String.format("\n%s dealt ",name) + rdamage + " damage";
 	}	
 	public String getName(){
 		return name;
 	}
-	public String getVisual(){
+	public String getVisual(){//returns the ASCII'd pokemon
 		return visual;
 	}
 	public String toString(){
@@ -120,7 +121,7 @@ public class Pokemon{
 		return hp;
 	}
 	public int getPercentHp(){
-		return 10*Math.round(10*hp/(ohp));
+		return 100*Math.round(hp/(ohp));
 	}
 	public void setHp(int amount){
 		hp = 0;
@@ -146,31 +147,33 @@ public class Pokemon{
 	public int getPercentEnergy(){
 		return 10*(Math.round(10*energy/oenergy));
 	}
-	public String getStats(){
+	public String getStats(){//returns string of stats and 2 booleans of stunned disabled
 		return ""+hp + " " + energy + " " + (stunned? 1:0) +" "+ (disabled? 1:0);
 	}
-	public void recharge(int amount){
+	public void recharge(int amount){//allows pokemon to heal energy
 		energy = energy+amount;
 		if (energy > oenergy){
 			energy = oenergy;
+		}else{
 		}
 	}
-	public void heal(int amount){
+	public void heal(int amount){//allows pokemon to heal
 		hp = hp + amount;
 		if (hp > ohp) {
 			hp = ohp;
+		}else{
 		}
 	}
-	public void resetEnergy(){
+	public void resetEnergy(){//let's the energy all get reset to 50
 		energy = 50;
 	}
-	public void unstun(){
+	public void unstun(){//allows them to unstun
 		stunned = false;
 	}
-	public void undisable(){
+	public void undisable(){//let's pokemon not get disabled
 		disabled = false;
 	}
-	class Attack{
+	class Attack{//subclass of Pokemon, since only pokemon will attack
 		String name = "";
 		int cost = 0;
 		int damage = 0;
@@ -200,11 +203,11 @@ public class Pokemon{
 		public void stun(Pokemon defender){
 			defender.stunned = true;
 		}
-		public int wildCard(){
+		public int wildCard(){//50%chance to hit, returning the multiplier
 			Random rand = new Random();
 			return rand.nextInt(2);
 		}
-		public int wildStorm(){
+		public int wildStorm(){//recursion of 50% chance to hit, returning the multiplier
 			Random rand = new Random();
 			int myopt = rand.nextInt(2);
 			return myopt == 1? myopt + wildStorm():0;

@@ -5,13 +5,13 @@ import java.util.*;
 import java.io.*;
 public class PokemonArena{
 
-	private static ArrayList<Pokemon> allPokemon = new ArrayList<Pokemon>();
+	private static ArrayList<Pokemon> allPokemon = new ArrayList<Pokemon>();//all possible pokemon to select from
 	//the pokemon fighting will be the first item in each arraylist.
-	private static ArrayList<Pokemon> myPokemon = new ArrayList<Pokemon>();
-	private static ArrayList<Pokemon> opPokemon = new ArrayList<Pokemon>();
-	private static ArrayList<Pokemon> myGraveyard = new ArrayList<Pokemon>();
+	private static ArrayList<Pokemon> myPokemon = new ArrayList<Pokemon>();//pokemon you can control
+	private static ArrayList<Pokemon> opPokemon = new ArrayList<Pokemon>();//opponent pokemon
+	private static ArrayList<Pokemon> myGraveyard = new ArrayList<Pokemon>();//dead pokemon on team
 
-	private static void load(String inFile) throws IOException{
+	private static void load(String inFile) throws IOException{//loads pokemon from the file specified
 		Scanner pokemonFile = new Scanner(new BufferedReader(new FileReader(inFile)));
 		int numPokemon = Integer.parseInt(pokemonFile.nextLine());
 		for (int i = 0; i < numPokemon; ++i){
@@ -20,9 +20,9 @@ public class PokemonArena{
 		}
 		pokemonFile.close();
 	}
-	private static void recharge(){
+	private static void recharge(){//end of turn stuff to take care of
 		myPokemon.get(0).unstun(); //unstuns at the end of the turn
-		opPokemon.get(0).unstun();
+		opPokemon.get(0).unstun(); //pokemon can only get unstunned if they stay 1 turn in battle
 		for (Pokemon alive : myPokemon) {
 			alive.recharge(10);
 		}
@@ -32,7 +32,7 @@ public class PokemonArena{
 	}
 	private static void heal(){
 		for (Pokemon alive : myPokemon) {
-			alive.heal(20);
+			alive.heal(20);//this is the passive heal after each battle
 		}
 	}
 	private static void attack(Pokemon attacker,Pokemon defender){
@@ -40,14 +40,14 @@ public class PokemonArena{
 		PokemonTools.displayAttacks(attacker);
 		PokemonTools.displayBorderedDownText(String.format("%d. Back",attacker.getNumMoves()+1));
 		int myopt = PokemonTools.takeInt(1,attacker.getNumMoves()+1);
-		if (myopt == attacker.getNumMoves()+1) {
+		if (myopt == attacker.getNumMoves()+1) {//this is the last option to go back
 			pickAction();
 		}else{
-			if(attacker.canUseMove(myopt-1)){
+			if(attacker.canUseMove(myopt-1)){//checks if the move can be used
 				System.out.println("Attacked");
 				System.out.println(attacker.attack(defender,myopt-1));
 			}else{
-				System.out.println("NOT ENOUGH ENERGY");
+				System.out.println("NOT ENOUGH ENERGY");//move can't be used
 				attack(attacker,defender); //allows them to reselect a move
 			}
 		}
@@ -55,18 +55,18 @@ public class PokemonArena{
 	private static void retreat(){
 		PokemonTools.displayBorderedUpText("Which Pokemon would you like to swap out to?");
 		for (int i = 1; i < myPokemon.size(); ++i) {
-			PokemonTools.displayPokemonStats(i,myPokemon.get(i));
+			PokemonTools.displayPokemonStats(i,myPokemon.get(i));//shows alive pokemon they can choose
 		}
 		for (int i = 0; i < myGraveyard.size(); ++i) {
 			System.out.print("-. ");
-			PokemonTools.displayPokemonStats(myGraveyard.get(i));
+			PokemonTools.displayPokemonStats(myGraveyard.get(i));//shows dead pokemon that they can't choose
 		}
 		PokemonTools.displayText(String.format("%d. Back",myPokemon.size()));
 		PokemonTools.displayBorderedDownText("NoTextToDisplay");
 		int myopt = PokemonTools.takeInt(1,myPokemon.size());
 		if (myopt == myPokemon.size()) {
-			pickAction();
-		}else{//pop both out; 0 and selected. put 0 into end, and selected into 0
+			pickAction();//goes back to previous menu
+		}else{//pop both pokemon out: 0 and selected. put 0 into end, and selected into 0
 			Pokemon selected = myPokemon.get(myopt);
 			PokemonTools.displayText(String.format("%s, I Choose You!",selected.getName()));
 			Pokemon swapout = myPokemon.get(0);
@@ -80,10 +80,9 @@ public class PokemonArena{
 		return;
 	}
 	private static void enemyTurn(){
-		//create list of priority attacks to use
+		//create arraylist of moves index, then shuffle
 		//go through and check if it can attack with the energy
 		//else struggle
-		//create arraylist of moves index, then shuffle
 		// WHY DON'T I HAVE THIS PACKAGE int[] enemyOptions = IntStream.range(0, opPokemon.get(0).getNumMoves()).toArray();
 		ArrayList<Integer> enemyOptions = new ArrayList<Integer>();
 		for (int i = 0; i < opPokemon.get(0).getNumMoves(); i++) {
@@ -102,6 +101,7 @@ public class PokemonArena{
 		opPokemon.get(0).struggle(myPokemon.get(0));
 	}
 	private static int battle(int first){//order of battle depends on first.
+		//must be able to return 3 things -> allow user to quit, realize player lost pokemon, and do nothing
 		PokemonTools.displayBattle(myPokemon.get(0),opPokemon.get(0));
 		if(first == 1){
 			enemyTurn();
@@ -173,30 +173,6 @@ public class PokemonArena{
 		swapPokemon(myopt);
 	}
 	private static boolean round(int battlenum){
-		//determines if the opponent starts first in the round
-		// Random rand = new Random();
-		// PokemonTools.displayCenteredText(String.format("Battle %d",battlenum));
-		// selectStarter();
-		// if (rand.nextInt(2) == 1) {
-		// 	PokemonTools.displayBattle(opPokemon.get(0),myPokemon.get(0));
-		// 	enemyTurn();
-		// 	if(checkPlayerTurn()){
-		// 		return false;
-		// 	}
-		// }
-		// while (true){
-		// 	PokemonTools.displayBattle(myPokemon.get(0),opPokemon.get(0));
-		// 	if(pickAction()){
-		// 		return true;
-		// 	}
-		// 	if(checkEnemyTurn()){
-		// 		break;
-		// 	}
-		// 	enemyTurn();
-		// 	checkPlayerTurn();
-		// 	recharge();
-		// }
-		// return false;
 		Random rand = new Random();
 		PokemonTools.displayCenteredText(String.format("Battle %d",battlenum));
 		selectStarter();
@@ -215,27 +191,29 @@ public class PokemonArena{
 	}
 	private static boolean pickAction(){
 		PokemonTools.displayBorderedDownText(String.format("Pick an option\n1. Attack\n2. Retreat\n3. Pass\n4. Quit"));
-		int myopt = PokemonTools.takeInt(1,4);
+		int myopt = PokemonTools.takeInt(1,4);//lets them choose 1 of the 4 options
 		if (myopt == 1){
 			attack(myPokemon.get(0),opPokemon.get(0));
 		}else if (myopt == 2){
 			retreat();
 		}else if(myopt == 3){
 			pass();
-		}else{
+		}else{//this is quit, so i can check if they quit
 			return true;
 		}
 		return false;
 	}
 	private static void pickPokemon(){
-		PokemonTools.displayText("HELLO! Welcome to Pokemon Arena! Choose 4 pokemon");
-		for (int i = 0; i < 4; ++i) {
-			PokemonTools.displayPokemon(allPokemon);
+		PokemonTools.displayBorderedUpText("NoTextToDisplay");
+		PokemonTools.displayCenteredText("HELLO! Welcome to Pokemon Arena! Choose 4 pokemon");
+		for (int i = 0; i < 4; ++i) {//allowing the player to choose 4 pokemon in the most terrible way possible
+			PokemonTools.displayPokemon(allPokemon);//shows the screen 4 times cuz it's easier to not mess up the arraylists
 			System.out.printf("Please select a Pokemon to add to you team! %d/4 \n",i+1);
 			int poke = PokemonTools.takeInt(1,allPokemon.size())-1;
 			myPokemon.add(allPokemon.get(poke));
 			allPokemon.remove(poke);
 		}
+		//randomly puts the allpokemon into oppokemon
 		Random rand = new Random();
 		while (allPokemon.size() > 0){
 			int nextpoke = rand.nextInt(allPokemon.size());
@@ -257,11 +235,11 @@ public class PokemonArena{
 			} //takes care of the entire battle
 			reset(); //heals all pokemon energy for 20 at the end of each battle
 		}
-		if (myPokemon.size() == 0) {
+		if (myPokemon.size() == 0) {//you got defeated
 			System.out.println("YOU LOST");
-		}else if (opPokemon.size() == 0) {
+		}else if (opPokemon.size() == 0) {//you defeated all enemies
 			System.out.println("YOU WON");
-		}else{
+		}else{//you quit
 			System.out.println("You fleed the battle...");
 		}
 	}

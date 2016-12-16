@@ -10,7 +10,7 @@ public class PokemonTools{
 	private static char statusempty = '▒';
 	private static char statusfill = '█';
 	//static class with static methods to be used in pokemon arena
-	public static void loadTexts(){
+	public static void loadTexts(){//loads up all necessary texts that may be used
 		try{
 			Scanner vsFile = new Scanner(new BufferedReader(new FileReader("vs.txt")));
 			vsFile.useDelimiter("\\Z");  
@@ -40,12 +40,12 @@ public class PokemonTools{
 	public static void displayPokemonStats(Pokemon pokeToSee){
 		String [] pokeStats = pokeToSee.getStats().split("\\s+");
 		//MAKE BARS FOR HP AND ENERGY
-		int myhp = pokeToSee.getPercentHp()/10;
-		int myenergy = pokeToSee.getPercentEnergy()/10;
+		int myhp = pokeToSee.getPercentHp()/5;
+		int myenergy = pokeToSee.getPercentEnergy()/5;
 		String hpfill = new String(new char[myhp]).replace('\0', statusfill);
-		String hpmissing = new String(new char[10-myhp]).replace('\0', statusempty);
+		String hpmissing = new String(new char[20-myhp]).replace('\0', statusempty);
 		String energyfill = new String(new char[myenergy]).replace('\0', statusfill);
-		String energymissing = new String(new char[10-myenergy]).replace('\0', statusempty);
+		String energymissing = new String(new char[20-myenergy]).replace('\0', statusempty);
 		String hpBar = hpfill+hpmissing;
 		String energyBar = energyfill+energymissing;
 		String toDisplay = String.format("HP: %s "+hpBar+"  Energy: %s" + energyBar,pokeStats[0],pokeStats[1]);
