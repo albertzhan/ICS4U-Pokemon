@@ -4,7 +4,8 @@ import java.util.*;
 import java.io.*;
 public class PokemonTools{
 	private static int boxsize = 114;
-	private static String border = new String(new char[boxsize]).replace('\0', '=');
+	//java version of border = '='*boxsize
+	private static String border = new String(new char[boxsize]).replace('\0', '='); //the most op line that creates boxsize amount of '=' char in a row
 	private static String errorMessage = "Oops, please enter a valid number!";
 	private static String vs = "";
 	private static char statusempty = '▒';
@@ -13,8 +14,8 @@ public class PokemonTools{
 	public static void loadTexts(){//loads up all necessary texts that may be used
 		try{
 			Scanner vsFile = new Scanner(new BufferedReader(new FileReader("vs.txt")));
-			vsFile.useDelimiter("\\Z");  
-			vs = vsFile.next(); 
+			vsFile.useDelimiter("\\Z");//allows me to 
+			vs = vsFile.next();        //store the entire file as a string
 			vsFile.close();
 		}catch(IOException e){
 			vs = "NO DISPLAY AVAILABLE";

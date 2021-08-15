@@ -35,13 +35,13 @@ public class Pokemon{//class to create pokemon objects
 			Attack newAttack = new Attack(pokemonStats[spot],Integer.parseInt(pokemonStats[spot+1]),Integer.parseInt(pokemonStats[spot+2]),pokemonStats[spot+3]);
 			attacks.add(newAttack);
 		}
-		try{
+		try{//gets the visual of the pokemon, contained in the folder pokepack
 			Scanner pokemonFile = new Scanner(new BufferedReader(new FileReader("pokepack/"+name+".txt")));
 			pokemonFile.useDelimiter("\\Z");  
 			visual = pokemonFile.next(); 
 			pokemonFile.close();
 		}catch(IOException e){
-			visual = "NO DISPLAY AVAILABLE";
+			visual = "NO DISPLAY AVAILABLE\n\n\n\n\n\n";
 		}
 	}
 	public boolean canUseMove(int movenum){
@@ -75,9 +75,13 @@ public class Pokemon{//class to create pokemon objects
 		}
 		energy -= move.cost;//subtracts energy cost
 		int baseattack = move.damage - (disabled? 10:0);
+		if (baseattack < 0) {
+			baseattack = 0;
+		}
 		//calculating effects
 		if (move.effects[0]) {
 			move.stun(defender);
+			attackDescription = attackDescription + String.format("\n%s got stunned!",defender,defender.getName());
 		}if (move.effects[1]) {
 			int timeshit = move.wildCard();
 			if (timeshit == 0) {
@@ -98,7 +102,7 @@ public class Pokemon{//class to create pokemon objects
 			}
 		}if (move.effects[3]) {
 			move.disable(defender);
-			attackDescription = attackDescription + String.format("\n%s got stunned!",defender,defender.getName());
+			attackDescription = attackDescription + String.format("\n%s got disabled! %s now does 10 less damage.",defender,defender.getName());
 		}if (move.effects[4]) {
 			recharge(20);
 			attackDescription = attackDescription + String.format("\n%s recovered 20 energy!",name);
@@ -121,7 +125,7 @@ public class Pokemon{//class to create pokemon objects
 		return hp;
 	}
 	public int getPercentHp(){
-		return 100*Math.round(hp/(ohp));
+		return Math.round(100*hp/(ohp));
 	}
 	public void setHp(int amount){
 		hp = 0;
@@ -145,7 +149,7 @@ public class Pokemon{//class to create pokemon objects
 		return energy;
 	}
 	public int getPercentEnergy(){
-		return 10*(Math.round(10*energy/oenergy));
+		return Math.round(100*energy/oenergy);
 	}
 	public String getStats(){//returns string of stats and 2 booleans of stunned disabled
 		return ""+hp + " " + energy + " " + (stunned? 1:0) +" "+ (disabled? 1:0);

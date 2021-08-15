@@ -44,7 +44,6 @@ public class PokemonArena{
 			pickAction();
 		}else{
 			if(attacker.canUseMove(myopt-1)){//checks if the move can be used
-				System.out.println("Attacked");
 				System.out.println(attacker.attack(defender,myopt-1));
 			}else{
 				System.out.println("NOT ENOUGH ENERGY");//move can't be used
@@ -148,12 +147,13 @@ public class PokemonArena{
 	}
 	private static void reset(){
 		for (Pokemon alive : myPokemon) {
+			alive.heal(20);
 			alive.resetEnergy();
 			alive.unstun();
 			alive.undisable();
 		}
 	}
-	private static void swapPokemon(int myopt){
+	private static void swapPokemon(int myopt){//swaps the 2 pokemon
 		if (myopt == 0) {
 			PokemonTools.displayText(String.format("%s, I Choose You!",myPokemon.get(myopt).getName()));
 			return;
